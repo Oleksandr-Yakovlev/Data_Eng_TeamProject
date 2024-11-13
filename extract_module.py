@@ -29,7 +29,7 @@ def extract_data(**kwargs):
         print("Downloaded file is not a ZIP archive, skipping extraction.")
 
     # Push the CSV file path to XCom for use in the next steps
-    # kwargs['ti'].xcom_push(key='csv_file_path', value=downloaded_file_path)
+    kwargs['ti'].xcom_push(key='csv_file_path', value=downloaded_file_path)
 
 # Execute the function
 extract_data()
