@@ -1,25 +1,76 @@
 #Transform Module
 import pandas as pd
+import numpy as np
 def transform_data(**kwargs):
     # Retrieve file path from XCom
     file_path = kwargs['ti'].xcom_pull(key='csv_file_path')
     df = pd.read_csv(file_path)
 
+    # Formatted date column to date format
     df['Formatted Date'] = pd.to_datetime(df['Formatted Date'], utc=True)
-    df['Formatted Date'] = df['Formatted Date'].dt.strftime('%d-%m-%Y')
 
     # Handle missing values in critical columns
     critical_columns = ['Temperature (C)', 'Humidity', 'Wind Speed (km/h)']
     for column in critical_columns:
         df[column].fillna(df[column].median(), inplace=True)
 
+    df.drop_duplicates(inplace=True)
+
+    # Create 'Date' and 'Month' for calculating averages
     df['Date'] = df['Formatted Date'].dt.date
     df['Month'] = df['Formatted Date'].dt.month
 
+    # Calculating daily averages
     daily_avg_temperature = df.groupby('Date')['Temperature (C)'].mean()
     daily_avg_humidity = df.groupby('Date')['Humidity'].mean()
     daily_avg_wind_speed = df.groupby('Date')['Wind Speed (km/h)'].mean()
 
-    monthly_precip_type = df.groupby(['Month'])['Precip Type'].agg(pd.Series.mode)
+    # Define a function to calculate monthly mode value
+    def calculate_monthly_mode(series):
+        mode = series.mode()
+        return mode[0] if len(mode) == 1 else np.nan
 
-    df['Mode'] = monthly_precip_type
+    # Use 'calculate_monthly_mode' function
+    monthly_precip_type = df.groupby('Month')['Precip Type'].agg(calculate_monthly_mode)
+
+    # Mapping Mode Values to the DataFrame
+    df['Mode'] = df['Month'].map(monthly_precip_type)
+
+    # Define function to categorize wind speed
+    def categorize_wind_speed(speed_kmh):
+        speed = speed_kmh / 3.6
+        if 0 <= speed <= 1.5:
+            return 'Calm'
+        elif 1.6 <= speed <= 3.3:
+            return 'Light Air'
+        elif 3.4 <= speed <= 5.4:
+            return 'Light Breeze'
+        elif 5.5 <= speed <= 7.9:
+            return 'Gentle Breeze'
+        elif 8.0 <= speed <= 10.7:
+            return 'Moderate Breeze'
+        elif 10.8 <= speed <= 13.8:
+            return 'Fresh Breeze'
+        elif 13.9 <= speed <= 17.1:
+            return 'Strong Breeze'
+        elif 17.2 <= speed <= 20.7:
+            return 'Near Gale'
+        elif 20.8 <= speed <= 24.4:
+            return 'Gale'
+        elif 24.5 <= speed <= 28.4:
+            return 'Strong Gale'
+        elif 28.5 <= speed <= 32.6:
+            return 'Storm'
+        elif speed >= 32.7:
+            return 'Violent Storm'
+
+    # Using 'categorize_wind_speed' function and write the value to new Wind Strength column.
+    df['Wind Strength'] = df['Wind Speed (km/h)'].apply(categorize_wind_speed)
+
+    # Calculating Monthly averages
+    monthly_avg_temperature = df.groupby('Month')['Temperature (C)'].mean()
+    monthly_avg_humidity = df.groupby('Month')['Humidity'].mean()
+    monthly_avg_wind_speed = df.groupby('Month')['Wind Speed (km/h)'].mean()
+    monthly_avg_visibility = df.groupby('Month')['Visibility (km)'].mean()
+    monthly_avg_pressure = df.groupby('Month')['Pressure (millibars)'].mean()
+
