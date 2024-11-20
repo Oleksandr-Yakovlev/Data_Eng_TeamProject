@@ -17,7 +17,7 @@ def validate_data(**kwargs):
     def check_missing_values(df):
         # List the critical columns
         critical_columns = ['Temperature (C)', 'Humidity', 'Wind Speed (km/h)', 'Visibility (km)',
-                            'Pressure (millibars)', 'wind_strenght', ]
+                            'Pressure (millibars)', 'Wind Strength', 'Mode']
         if df[critical_columns].isnull().any().any():
             raise ValueError("Validation failed: Missing values in critical columns after transformation.")
 

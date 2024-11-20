@@ -36,5 +36,3 @@ def extract_data(**kwargs):
     # Push the CSV file path to XCom for use in the next steps
     kwargs['ti'].xcom_push(key='csv_file_path', value=downloaded_file_path)
 
-# Execute the function
-extract_data()
