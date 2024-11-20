@@ -6,7 +6,11 @@ def transform_data(**kwargs):
     file_path = kwargs['ti'].xcom_pull(key='csv_file_path')
     df = pd.read_csv(file_path)
 
-    # Formatted date column to date format
+    # Set id
+    if 'id' not in df.columns:
+        df['id'] = df.index
+
+        # Formatted date column to date format
     df['Formatted Date'] = pd.to_datetime(df['Formatted Date'], utc=True)
 
     # Handle missing values in critical columns
@@ -24,6 +28,10 @@ def transform_data(**kwargs):
     daily_avg_temperature = df.groupby('Date')['Temperature (C)'].mean()
     daily_avg_humidity = df.groupby('Date')['Humidity'].mean()
     daily_avg_wind_speed = df.groupby('Date')['Wind Speed (km/h)'].mean()
+
+    df['Avg Temperature (C)'] = df['Date'].map(daily_avg_temperature)
+    df['Avg Humidity'] = df['Date'].map(daily_avg_humidity)
+    df['Avg Wind Speed (km/h)'] = df['Date'].map(daily_avg_wind_speed)
 
     # Define a function to calculate monthly mode value
     def calculate_monthly_mode(series):
@@ -69,8 +77,34 @@ def transform_data(**kwargs):
 
     # Calculating Monthly averages
     monthly_avg_temperature = df.groupby('Month')['Temperature (C)'].mean()
+    monthly_avg_apparent_temperature = df.groupby('Month')['Apparent Temperature (C)'].mean()
     monthly_avg_humidity = df.groupby('Month')['Humidity'].mean()
-    monthly_avg_wind_speed = df.groupby('Month')['Wind Speed (km/h)'].mean()
     monthly_avg_visibility = df.groupby('Month')['Visibility (km)'].mean()
     monthly_avg_pressure = df.groupby('Month')['Pressure (millibars)'].mean()
+
+    daily_weather = df[['id', 'Formatted Date', 'Temperature (C)', 'Apparent Temperature (C)', 'Humidity',
+                        'Wind Speed (km/h)', 'Visibility (km)', 'Pressure (millibars)', 'Wind Strength',
+                        'Avg Temperature (C)', 'Avg Humidity', 'Avg Wind Speed (km/h)']]
+
+    monthly_weather = pd.DataFrame({
+        'id': range(1, len(monthly_avg_temperature) + 1),
+        'Month': monthly_avg_temperature.index,
+        'Avg Temperature (C)': monthly_avg_temperature.values,
+        'Avg Apparent Temperature (C)': monthly_avg_apparent_temperature.values,
+        'Avg Humidity': monthly_avg_humidity.values,
+        'Avg Visibility (km)': monthly_avg_visibility.values,
+        'Avg Pressure (millibars)': monthly_avg_pressure.values,
+        'Mode Precip Type': monthly_precip_type.values
+    })
+
+
+    daily_weather.to_csv('daily_weather.csv', index=False)
+    monthly_weather.to_csv('monthly_weather.csv', index=False)
+
+    daily_weather_file_path = 'tmp/daily_weather.csv'
+    monthly_weather_file_path = 'tmp/monthly_weather.csv'
+
+    kwargs['ti'].xcom_push(key='daily_weather_csv_file_path', value=daily_weather_file_path)
+    kwargs['ti'].xcom_push(key='monthly_weather_csv_file_path', value=monthly_weather_file_path)
+
 
