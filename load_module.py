@@ -1,3 +1,6 @@
+import pandas as pd
+import sqlite3
+
     #Load_module
 def load_data(**kwargs):
     # Get the validated file path from XCom
@@ -18,11 +21,3 @@ def load_data(**kwargs):
     # Commit and close the connection
     conn.commit()
     conn.close()
-
-load_task = PythonOperator(
-    task_id='load_task',
-    python_callable=load_data,
-    provide_context=True,
-    trigger_rule='all_success',
-    dag=dag,
-    )
