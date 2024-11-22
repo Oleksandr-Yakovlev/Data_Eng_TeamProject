@@ -8,7 +8,7 @@ from kaggle.api.kaggle_api_extended import KaggleApi
 
 
 # File paths
-csv_file_path = '/home/tuuli/airflow/datasets/weatherHistory.csv'
+csv_file_path = '/home/siiri/airflow/datasets/weatherHistory.csv'
 
 # Task 1: Extract data
 def extract_data(**kwargs):
@@ -19,11 +19,11 @@ def extract_data(**kwargs):
     api.authenticate()
 
     # Define file paths
-    downloaded_file_path = '/home/tuuli/airflow/datasets/weatherHistory.csv'
+    downloaded_file_path = '/home/siiri/airflow/datasets/weatherHistory.csv'
     zip_file_path = downloaded_file_path + '.zip'
 
     if not os.path.exists(downloaded_file_path):
-        api.dataset_download_file("muthuj7/weather-dataset", file_name='weatherHistory.csv', path='/home/tuuli/airflow/datasets')
+        api.dataset_download_file("muthuj7/weather-dataset", file_name='weatherHistory.csv', path='/home/siiri/airflow/datasets')
     else:
         print("File already exists, skipping download.")# Download the dataset file
 
@@ -31,7 +31,7 @@ def extract_data(**kwargs):
     if os.path.exists(zip_file_path) and zipfile.is_zipfile(zip_file_path):
         # If it's a ZIP file, unzip it
         with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
-            zip_ref.extractall('/home/tuuli/airflow/datasets')
+            zip_ref.extractall('/home/siiri/airflow/datasets')
         # Optionally delete the ZIP file after extraction
         os.remove(zip_file_path)
     else:
