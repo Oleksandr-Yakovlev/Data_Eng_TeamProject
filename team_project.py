@@ -12,17 +12,21 @@ from extract_module import extract_data
 from transform_module import transform_data
 from validate_module import validate_data
 from load_module import load_data
+from transform_module import transform_data
+from validate_module import validate_data
+from load_module import load_data
 
 default_args = {
     'owner': 'Team-Project_ETL',
     'depends_on_past': False,
     'start_date': datetime(2024, 11, 6),
     'retries': 1,
-    'retry_delay': timedelta(minutes=5),
+    'retry_delay': timedelta(minutes=2),
 }
 
 # Define the DAG
 dag = DAG(
+    'Historical_weather_data',
     'Historical_weather_data',
     default_args=default_args,
     description='ETL pipeline for Historical weather data with validation and trigger rules',
