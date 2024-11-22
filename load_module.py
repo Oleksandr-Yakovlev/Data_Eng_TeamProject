@@ -2,7 +2,7 @@ import pandas as pd
 import sqlite3
 
 # Path for the database
-db_path = '/home/tuuli/airflow/databases/weatherHistorydb.db'
+db_path = '/Users/home/airflow/databases/weatherHistorydb.db'
     
 def load_data(**kwargs):
     # Get the validated file path from XCom
