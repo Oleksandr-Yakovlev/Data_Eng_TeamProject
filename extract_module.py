@@ -2,9 +2,9 @@ import os
 import zipfile
 from kaggle.api.kaggle_api_extended import KaggleApi
 
-
 # File paths
-csv_file_path = '/home/tuuli/airflow/datasets/weatherHistory.csv'
+csv_file_path = '/home/Users/airflow/datasets/weatherHistory.csv'
+
 
 # Task 1: Extract data
 def extract_data(**kwargs):
@@ -13,7 +13,8 @@ def extract_data(**kwargs):
     api.authenticate()
 
     # Download the dataset file
-    api.dataset_download_file("muthuj7/weather-dataset", file_name='weatherHistory.csv', path='/Users/home/airflow/datasets/')
+    api.dataset_download_file("muthuj7/weather-dataset", file_name='weatherHistory.csv',
+                              path='/Users/home/airflow/datasets/')
 
     # Define file paths
     downloaded_file_path = '/Users/home/airflow/datasets/weatherHistory.csv'
@@ -31,4 +32,3 @@ def extract_data(**kwargs):
 
     # Push the CSV file path to XCom for use in the next steps
     kwargs['ti'].xcom_push(key='csv_file_path', value=downloaded_file_path)
-
