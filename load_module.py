@@ -1,4 +1,6 @@
-    #Load_module
+import pandas as pd
+import sqlite3
+
 def load_data(**kwargs):
     # Get the validated file path from XCom
     daily_file_path = kwargs['ti'].xcom_pull(key='daily_validated_file_path')
@@ -18,11 +20,3 @@ def load_data(**kwargs):
     # Commit and close the connection
     conn.commit()
     conn.close()
-
-load_task = PythonOperator(
-    task_id='load_task',
-    python_callable=load_data,
-    provide_context=True,
-    trigger_rule='all_success',
-    dag=dag,
-    )
