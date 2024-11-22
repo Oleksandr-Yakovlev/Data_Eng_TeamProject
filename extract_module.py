@@ -9,6 +9,7 @@ from kaggle.api.kaggle_api_extended import KaggleApi
 
 # File paths
 csv_file_path = '/home/siiri/airflow/datasets/weatherHistory.csv'
+db_path = '/home/siiri/airflow/databases/weatherHistorydb.csv'
 
 # Task 1: Extract data
 def extract_data(**kwargs):

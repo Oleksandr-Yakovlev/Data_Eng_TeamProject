@@ -111,14 +111,3 @@ def validate_data(**kwargs):
 
     # Pass the file path to XCom for the next task
     kwargs['ti'].xcom_push(key='validated_file_path', value=transformed_file_path)
-
-
-validate_task = PythonOperator(
-    task_id='validate_task',
-    python_callable=validate_data,
-    provide_context=True,
-    trigger_rule='all_success',  # Proceed only if all previous tasks succeed
-    dag=dag,
-)
-
-# REMEMBER TO ADD TRIGGER RULE-LINE TO THE LOAD PART ALSO!
