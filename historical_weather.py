@@ -7,9 +7,9 @@ from validate_module import validate_data
 from load_module import load_data
 
 default_args = {
-    'owner': 'Team-Project_ETL',
+    'owner': 'user',
     'depends_on_past': False,
-    'start_date': datetime(2024, 11, 21),
+    'start_date': datetime(2024, 12, 8),
     'retries': 1,
     'retry_delay': timedelta(minutes=2),
 }
@@ -17,7 +17,7 @@ default_args = {
 dag = DAG(
     'Historical_weather_data',
     default_args=default_args,
-    description='ETL pipeline for Historical weather data with validation and trigger rules',
+    description='ETL pipeline for Historical weather data',
     schedule_interval='@daily',
 )
 

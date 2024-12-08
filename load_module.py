@@ -1,8 +1,9 @@
 import pandas as pd
 import sqlite3
+import os
 
 # Path for the database
-db_path = '/Users/home/airflow/databases/weatherHistorydb.db'
+db_path = os.getenv('DATABASE_PATH')
     
 def load_data(**kwargs):
     # Get the validated file path from XCom
@@ -17,8 +18,8 @@ def load_data(**kwargs):
     conn = sqlite3.connect(db_path)
 
     # Insert data into SQLite
-    daily_data.to_sql('daily_weather', conn, if_exists='append', index=False)
-    monthly_data.to_sql('monthly_weather', conn, if_exists='append', index=False)
+    daily_data.to_sql('daily_weather', conn, if_exists='replace', index=False)
+    monthly_data.to_sql('monthly_weather', conn, if_exists='replace', index=False)
 
     # Commit and close the connection
     conn.commit()
