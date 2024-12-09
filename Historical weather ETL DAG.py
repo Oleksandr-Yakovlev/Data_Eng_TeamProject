@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from extract_module import extract_data
-from transform_module import transform_data
-from validate_module import validate_data
-from load_module import load_data
+from tasks_modules.extract_module import extract_data
+from tasks_modules.transform_module import transform_data
+from tasks_modules.validate_module import validate_data
+from tasks_modules.load_module import load_data
 
 default_args = {
     'owner': 'user',
